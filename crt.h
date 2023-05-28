@@ -1,5 +1,5 @@
-#ifndef Little-CRT
-#define Little-CRT
+#ifndef Little_CRT
+#define Little_CRT
 
 #include <stdint.h>
 #include <windows.h>
