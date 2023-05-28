@@ -59,4 +59,25 @@ int32_t xputs(const char* str);
 int32_t xprintf(const char* format, ...);
 int32_t xwprintf(const wchar_t* format, ...);
 
+int xiswctype(wint_t c, wctype_t type);
+int xisspace(int c);
+int xiswspace(wint_t c);
+int xisupper(int c);
+int xiswupper(wint_t c);
+int xisalpha(int c);
+int xiswalpha(wint_t c);
+int xisdigit(int c);
+int xiswdigit(wint_t c);
+int xisxdigit(int c);
+int xiswxdigit(wint_t c);
+int xisalnum(int c);
+int xiswalnum(wint_t c);
+int xisprint(int c);
+int xiswprint(wint_t c);
+
+long xatol(const char* str);
+int xatoi(const char* str);
+long xwtol(const wchar_t* str);
+int xwtoi(const wchar_t* str);
+
 #endif

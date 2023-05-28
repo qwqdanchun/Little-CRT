@@ -360,4 +360,84 @@ int32_t xwprintf(const wchar_t* format, ...) {
     WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), string_buffer, string_length, NULL, NULL);
     return string_length;
 }
+
+int xiswctype(wint_t c, wctype_t type)
+{
+	WORD ret;
+	GetStringTypeW(CT_CTYPE1, (LPCWSTR)&c, 1, &ret);
+	if ((ret & type) != 0)
+		return 1;
+	return 0;
+}
+
+int xisspace(int c)		{return ((c >= 0x09 && c <= 0x0D) || (c == 0x20));}
+int xiswspace(wint_t c)	{return xiswctype(c, _BLANK);}
+
+int xisupper(int c)		{return (c >= 'A' && c <= 'Z');}
+int xiswupper(wint_t c)	{return xiswctype(c, _UPPER);}
+
+int xisalpha(int c)		{return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');}
+int xiswalpha(wint_t c)	{return xiswctype(c, _ALPHA);}
+
+int xisdigit(int c)		{return (c >= '0' && c <= '9');}
+int xiswdigit(wint_t c)	{return xiswctype(c, _DIGIT);}
+
+int xisxdigit(int c)		{return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');}
+int xiswxdigit(wint_t c)	{return xiswctype(c, _HEX);}
+
+int xisalnum(int c)		{return xisalpha(c) || isdigit(c);}
+int xiswalnum(wint_t c)	{return xiswctype(c, _ALPHA|_DIGIT);}
+
+int xisprint(int c)		{return c >= ' ';}
+int xiswprint(wint_t c)	{return xiswctype(c, (wctype_t)(~_CONTROL));}
+
+long xatol(const char *str)
+{
+    while (xisspace(*str))
+        ++str;
+    int cur = *str++;
+    int neg = cur;
+    if (cur == '-' || cur == '+')
+        cur = *str++;
+	long total = 0;
+    while (xisdigit(cur))
+    {
+        total = 10*total + (cur-'0');
+        cur = *str++;
+    }
+    if (neg == '-')
+        return -total;
+    else
+        return total;
+}
+
+int xatoi(const char *str)
+{
+    return (int)xatol(str);
+}
+
+long xwtol(const wchar_t *str)
+{
+    while (xiswspace(*str))
+        ++str;
+    wint_t cur = *str++;
+    wint_t neg = cur;
+    if (cur == L'-' || cur == L'+')
+        cur = *str++;
+	long total = 0;
+    while (xiswdigit(cur))
+    {
+        total = 10*total + (cur-L'0');
+        cur = *str++;
+    }
+    if (neg == L'-')
+        return -total;
+    else
+        return total;
+}
+
+int xwtoi(const wchar_t *str)
+{
+    return (int)xwtol(str);
+}
 #pragma optimize("", on)
