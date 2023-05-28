@@ -1,6 +1,4 @@
-#include <stdint.h>
-#include <windows.h>
-
+#include "crt.h"
 
 #pragma optimize("", off)
 void* xmalloc(size_t size) {
@@ -90,8 +88,8 @@ int xstrcmpi(const char* s1, const char* s2)
     return lstrcmpiA(s1, s2);
 }
 
-int xstricmp(const char* s1, const char* s2) 
-{ 
+int xstricmp(const char* s1, const char* s2)
+{
     return lstrcmpiA(s1, s2);
 }
 
