@@ -28,19 +28,22 @@ int xabs(int n)
     return (n > 0) ? n : -n;
 }
 
-void* xmemcpy(void* dest, const void* src, size_t n) {
-    for (size_t i = 0; i < n; i++) {
-        ((uint8_t*)dest)[i] = ((uint8_t*)src)[i];
-    }
-    return dest;
+void xmemcpy(void* dest, void* src, size_t n) {
+	int i;
+	char* src_char = (char*)src;
+	char* dest_char = (char*)dest;
+	for (i = 0; i < n; i++)
+		dest_char[i] = src_char[i];
 }
 
-void* xmemset(void* dst, int val, size_t size)
+void* xmemset(void* blk, int c, size_t n)
 {
-    char* realdst = (char*)dst;
-    for (size_t i = 0; i < size; i++)
-        realdst[i] = (char)val;
-    return dst;
+	unsigned char* dst = blk;
+
+	while (n-- > 0)
+		*dst++ = (unsigned char)c;
+
+	return blk;
 }
 
 int xmemcmp(const void* str1, const void* str2, size_t n) {
@@ -100,11 +103,12 @@ int xstrcmp(const char* s1, const char* s2)
 
 int xstrncmp(const char* s1, const char* s2, size_t n)
 {
-    if (!n)
-        return 0;
     const unsigned char* p1 = (const unsigned char*)s1;
     const unsigned char* p2 = (const unsigned char*)s2;
-    for (size_t i = 0; i < n; i++)
+    size_t i;
+    if (!n)
+        return 0;
+    for (i = 0; i < n; i++)
     {
         if (!p1[i] || p1[i] != p2[i])
             return p1[i] - p2[i];
@@ -126,15 +130,17 @@ char* xstrdup(const char* src)
 {
     if (!src)
         return 0;
-    char* dst = (char*)xmalloc(xstrlen(src) + 1);
-    xstrcpy(dst, src);
-    return dst;
+    else{
+        char* dst = (char*)xmalloc(xstrlen(src) + 1);
+        xstrcpy(dst, src);
+        return dst;
+    }
 }
 
 char* xstrncpy(char* dest, const char* src, size_t n)
 {
-    xmemcpy(dest, src, n);
     size_t len = xstrlen(src);
+    xmemcpy(dest, src, n);
     if (n > len)
         xmemset(&dest[len], 0, n - len);
     return dest;
@@ -170,13 +176,14 @@ char* xstrcat(char* dst, const char* src)
 
 const char* xstrstr(const char* str, const char* substr)
 {
+    int i;
     int str_len = xstrlen(str);
     int substr_len = xstrlen(substr);
     if (substr_len == 0)
         return str;
     if (str_len < substr_len)
         return 0;
-    for (int i = 0; i < (int)(str_len - substr_len + 1); i++)
+    for (i = 0; i < (int)(str_len - substr_len + 1); i++)
     {
         if (!xstrcmp(&str[i], substr))
             return (const char*)(&str[i]);
@@ -206,9 +213,10 @@ int xwcscmp(const wchar_t* s1, const wchar_t* s2)
 
 int xwcsncmp(const wchar_t* s1, const wchar_t* s2, size_t n)
 {
+    size_t i;
     if (!n)
         return 0;
-    for (size_t i = 0; i < n; i++)
+    for (i = 0; i < n; i++)
     {
         if (!s1[i] || s1[i] != s2[i])
             return s1[i] - s2[i];
@@ -226,15 +234,17 @@ wchar_t* xwcsdup(const wchar_t* src)
 {
     if (!src)
         return 0;
-    wchar_t* dst = (wchar_t*)xmalloc((xwcslen(src) + 1) * sizeof(wchar_t));
-    xwcscpy(dst, src);
-    return dst;
+    else{
+        wchar_t* dst = (wchar_t*)xmalloc((xwcslen(src) + 1) * sizeof(wchar_t));
+        xwcscpy(dst, src);
+        return dst;
+    }
 }
 
 wchar_t* xwcsncpy(wchar_t* dest, const wchar_t* src, size_t n)
 {
-    xmemcpy(dest, src, n * sizeof(wchar_t));
     size_t len = xwcslen(src);
+    xmemcpy(dest, src, n * sizeof(wchar_t));
     if (n > len)
         xmemset(&dest[len], 0, (n - len) * sizeof(wchar_t));
     return dest;
@@ -272,11 +282,12 @@ const wchar_t* xwcsstr(const wchar_t* str, const wchar_t* substr)
 {
     int str_len = xwcslen(str);
     int substr_len = xwcslen(substr);
+    int i;
     if (substr_len == 0)
         return str;
     if (str_len < substr_len)
         return 0;
-    for (int i = 0; i < (int)(str_len - substr_len + 1); i++)
+    for (i = 0; i < (int)(str_len - substr_len + 1); i++)
     {
         if (!xwcscmp(&str[i], substr))
             return (const wchar_t*)(&str[i]);
@@ -342,10 +353,11 @@ int32_t xputs(const char* str) {
 int32_t xprintf(const char* format, ...) {
     char string_buffer[1024];
     va_list args;
+    int32_t string_length;
     va_start(args, format);
     wvsprintfA(string_buffer, format, args);
     va_end(args);
-    int32_t string_length = xstrlen(string_buffer);
+    string_length = xstrlen(string_buffer);
     WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), string_buffer, string_length, NULL, NULL);
     return string_length;
 }
@@ -353,10 +365,11 @@ int32_t xprintf(const char* format, ...) {
 int32_t xwprintf(const wchar_t* format, ...) {
     wchar_t string_buffer[1024];
     va_list args;
+    int32_t string_length;
     va_start(args, format);
     wvsprintfW(string_buffer, format, args);
     va_end(args);
-    int32_t string_length = xwcslen(string_buffer);
+    string_length = xwcslen(string_buffer);
     WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), string_buffer, string_length, NULL, NULL);
     return string_length;
 }
@@ -393,13 +406,15 @@ int xiswprint(wint_t c)	{return xiswctype(c, (wctype_t)(~_CONTROL));}
 
 long xatol(const char *str)
 {
+    int cur;
+    int neg;
+	long total = 0;
     while (xisspace(*str))
         ++str;
-    int cur = *str++;
-    int neg = cur;
+    cur = *str++;
+    neg = cur;
     if (cur == '-' || cur == '+')
         cur = *str++;
-	long total = 0;
     while (xisdigit(cur))
     {
         total = 10*total + (cur-'0');
@@ -418,13 +433,15 @@ int xatoi(const char *str)
 
 long xwtol(const wchar_t *str)
 {
+    wint_t cur;
+    wint_t neg;
+	long total = 0;
     while (xiswspace(*str))
         ++str;
-    wint_t cur = *str++;
-    wint_t neg = cur;
+    cur = *str++;
+    neg = cur;
     if (cur == L'-' || cur == L'+')
         cur = *str++;
-	long total = 0;
     while (xiswdigit(cur))
     {
         total = 10*total + (cur-L'0');
