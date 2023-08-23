@@ -1,0 +1,1 @@
+cl runshc.c /O2 /MD /link kernel32.lib user32.lib /MANIFEST:NO /ENTRY:"main"
