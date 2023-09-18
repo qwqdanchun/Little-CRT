@@ -1,20 +1,5 @@
 #include <windows.h>
 
-#ifndef _FILE_DEFINED
-  struct _iobuf {
-    char *_ptr;
-    int _cnt;
-    char *_base;
-    int _flag;
-    int _file;
-    int _charbuf;
-    int _bufsiz;
-    char *_tmpfname;
-  };
-  typedef struct _iobuf FILE;
-#define _FILE_DEFINED
-#endif
-
 int _init_args();
 void _term_args();
 void* xmalloc(size_t size);
@@ -39,7 +24,9 @@ char* xstrncpy(char* dest, const char* src, size_t n);
 const char* xstrchr(const char* str, int ch);
 const char* xstrrchr(const char* str, int ch);
 char* xstrcat(char* dst, const char* src);
-const char* xxstrstr(const char* str, const char* substr);
+int xstrncat_s(char * dest, size_t num, const char * source, size_t count);
+char* xstrstr(char* str, const char* substr);
+char* xstrtok(char* s, const char* delm);
 size_t xwcslen(const wchar_t* str);
 wchar_t* xwcscpy(wchar_t* dest, const wchar_t* src);
 int xwcsicmp(const wchar_t* s1, const wchar_t* s2);
@@ -82,24 +69,9 @@ long xatol(const char* str);
 int xatoi(const char* str);
 long xwtol(const wchar_t* str);
 int xwtoi(const wchar_t* str);
-FILE* __cdecl xfopen(const char* path, const char* attrs);
-FILE* __cdecl _xwfopen(const wchar_t* path, const wchar_t* attrs);
-size_t __cdecl xfwrite(const void* buffer, size_t size, size_t count, FILE* str);
-int __cdecl xfprintf(FILE* fp, const char* s, ...);
-int __cdecl vfprintf(FILE* fp, const char* s, va_list args);
-int __cdecl fwprintf(FILE* fp, const wchar_t* s, ...);
-int __cdecl xfclose(FILE* fp);
-int __cdecl xfeof(FILE* fp);
-int __cdecl xfseek(FILE* str, long offset, int origin);
-long __cdecl xftell(FILE* fp);
-size_t __cdecl xfread(void* buffer, size_t size, size_t count, FILE* str);
-char* __cdecl xfgets(char* str, int n, FILE* s);
-wchar_t* __cdecl xfgetws(wchar_t* str, int n, FILE* s);
-int __cdecl xfgetc(FILE* s);
-int __cdecl xfputc(int ch, FILE* s);
-wint_t __cdecl xfgetwc(FILE* s);
-int __cdecl xfflush(FILE* stream);
-int __cdecl xfileno(FILE* stream);
 int x_vscprintf(const char *format, va_list argptr);
 int x_vsnprintf(char *buffer, size_t count, const char *format, va_list argptr);
 int xsnprintf(char *s, size_t n, const char *format, ...);
+int xvsprintf_s(char *buffer, size_t numberOfElements, const char *format, va_list argptr);
+int xputenv(const char *str);
+time_t xtime( time_t *destTime );

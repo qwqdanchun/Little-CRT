@@ -1,4 +1,4 @@
-#include "../crt.h"
+#include "../crt.c"
 
 int main()
 {
